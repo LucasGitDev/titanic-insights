@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "titanic-insights"
+version = "0.1.0"
+description = ""
+authors = ["Lucas <devlucasteles@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.3.0"
+numpy = "^2.3.0"
+scikit-learn = "^1.7.0"
+jupyterlab = "^4.4.3"
+matplotlib = "^3.10.3"
+black = {extras = ["jupyter"], version = "^25.1.0"}
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+isort = "^6.0.1"
+pre-commit = "^4.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
