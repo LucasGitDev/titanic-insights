@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Poetry virtualenv (se você usar .venv no projeto)
+.venv/
+venv/
+
+# Distribuições e builds
+build/
+dist/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Dados brutos e processados
+data/raw/
+data/processed/
+
+# Configurações de ambiente
+.env
+.env.*.local
+
+# Logs e relatórios
+*.log
+logs/
+reports/figures/
+
+# IDEs e editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Ferramentas de lint e cache
+.python-version
+.mypy_cache/
+.coverage
+.pytest_cache/
+.cache/
+
+# Pré-commit
+.pre-commit-config.yaml
