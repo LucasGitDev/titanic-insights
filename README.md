@@ -1,199 +1,155 @@
-# 🚢 Titanic Insights
+# Titanic Insights 🚢
 
-Pipeline de Machine Learning para análise de sobrevivência no Titanic.
+Análise completa e pipeline de Machine Learning para o clássico desafio do Kaggle: prever a sobrevivência de passageiros no desastre do Titanic. Este projeto implementa um fluxo de trabalho de ponta a ponta, desde o download dos dados até a implantação de uma API de predição.
 
-## 📋 Sobre o Projeto
+![Interface da CLI](https://raw.githubusercontent.com/lucasgitdev/titanic-insights/main/reports/figures/cli_screenshot.png)
 
-Este projeto implementa um pipeline completo de Machine Learning para analisar e prever a sobrevivência de passageiros do Titanic. Inclui:
+## ✨ Funcionalidades
 
-- 📥 Download automático dos dados
-- 🔍 Exploração e análise dos dados
-- 🧹 Pré-processamento
-- 🤖 Treinamento de modelos
-- 📊 Avaliação e métricas
-- 📈 Geração de insights
+- **CLI Interativa:** Uma interface de linha de comando moderna e amigável construída com `Click` e `Rich` para gerenciar todo o pipeline.
+- **Pipeline de ML:** Etapas bem definidas para download, pré-processamento, treinamento e avaliação de modelos.
+- **Engenharia de Features:** Criação de novas features para melhorar a performance do modelo.
+- **API de Predição:** Uma API FastAPI com documentação Swagger interativa para realizar predições em tempo real.
+- **Ambiente Reproduzível:** Gerenciamento de dependências com `Poetry` para garantir a consistibilidade.
+- **Jupyter Lab Integrado:** Fácil acesso ao ambiente de exploração de dados.
 
-## 🚀 Como Iniciar o Projeto
+## 🚀 Começando
+
+Siga os passos abaixo para configurar e executar o projeto localmente.
 
 ### Pré-requisitos
 
-- Python 3.11+
-- Poetry (gerenciador de dependências)
+- Python 3.11 ou superior
+- [Poetry](https://python-poetry.org/docs/#installation) para gerenciamento de dependências.
 
-### 1. Clone o Repositório
+### Instalação
+
+1. **Clone o repositório:**
+
+   ```bash
+   git clone https://github.com/lucasgitdev/titanic-insights.git
+   cd titanic-insights
+   ```
+2. **Instale as dependências:**
+   Use o Poetry para criar um ambiente virtual e instalar todos os pacotes necessários.
+
+   ```bash
+   poetry install
+   ```
+3. **Ative o ambiente virtual:**
+
+   ```bash
+   poetry shell
+   ```
+
+## 💻 Uso
+
+A principal forma de interagir com o projeto é através da CLI.
+
+### CLI Interativa
+
+Para uma experiência guiada, execute o modo interativo:
 
 ```bash
-git clone <url-do-repositorio>
-cd titanic-insights
+titanic-insights
 ```
 
-### 2. Instale as Dependências
+Você verá um menu com todas as opções disponíveis:
 
-```bash
-# Instalar Poetry (se não tiver)
-curl -sSL https://install.python-poetry.org | python3 -
-
-# Instalar dependências do projeto
-poetry install
 ```
-
-### 3. Configure a API do Kaggle (Obrigatório para Download)
-
-Para baixar os dados automaticamente, você precisa configurar a API do Kaggle:
-
-#### Opção A: Configuração Automática
-```bash
-# O CLI irá guiar você através do processo
-poetry run titanic-cli download
-```
-
-#### Opção B: Configuração Manual
-1. Acesse [Kaggle.com](https://www.kaggle.com) e crie uma conta
-2. Vá para [Settings > Account](https://www.kaggle.com/settings/account)
-3. Clique em "Create New API Token"
-4. Baixe o arquivo `kaggle.json`
-5. Configure:
-```bash
-mkdir ~/.kaggle
-mv ~/Downloads/kaggle.json ~/.kaggle/
-chmod 600 ~/.kaggle/kaggle.json
-```
-
-📖 **Instruções detalhadas**: Veja [KAGGLE_SETUP.md](KAGGLE_SETUP.md)
-
-### 4. Baixe os Dados
-
-#### Usando o CLI (Recomendado)
-```bash
-# Modo interativo
-poetry run titanic-cli
-
-# Ou comando direto
-poetry run titanic-cli download
-```
-
-#### Download Manual (Alternativo)
-Se preferir não configurar a API do Kaggle:
-1. Acesse: https://www.kaggle.com/c/titanic/data
-2. Baixe `train.csv` e `test.csv`
-3. Coloque os arquivos em `data/raw/`
-
-### 5. Explore o Projeto
-
-```bash
-# Abrir Jupyter Lab
-poetry run titanic-cli jupyter
-
-# Ou abrir notebook específico
-jupyter lab notebooks/00_exploracao.ipynb
-```
-
-## 🛠️ Uso do CLI
-
-O projeto inclui um CLI interativo e profissional para facilitar o uso:
-
-### Modo Interativo
-```bash
-poetry run titanic-cli
+📋 Menu Principal
+┏━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓
+┃ Opção ┃ Descrição                ┃ Status      ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩
+│ 1     │ 📥 Download dos dados    │ ✅ Disponível │
+│ 2     │ 🔍 Explorar dados        │ ✅ Disponível │
+│ 3     │ 🧹 Pré-processar dados   │ ✅ Disponível │
+│ 4     │ 🤖 Treinar modelo        │ ✅ Disponível │
+│ 5     │ 📊 Avaliar modelo        │ ✅ Disponível │
+│ 6     │ 📈 Gerar insights        │ 🔄 Em desenvolvimento │
+│ 7     │ 📝 Abrir Jupyter Lab     │ ✅ Disponível │
+│ 8     │ 🚀 Iniciar API           │ ✅ Disponível │
+│ 0     │ ❌ Sair                  │ ✅ Disponível │
+└───────┴──────────────────────────┴─────────────┘
 ```
 
 ### Comandos Diretos
+
+Você também pode executar cada etapa do pipeline como um comando direto:
+
+- **Download dos dados do Kaggle:**
+
+  ```bash
+  titanic-insights download
+  ```
+
+  *(Requer configuração do `kaggle.json`. Veja `KAGGLE_SETUP.md`)*
+- **Pré-processar os dados:**
+
+  ```bash
+  titanic-insights preprocess
+  ```
+- **Treinar o modelo:**
+
+  ```bash
+  titanic-insights train
+  ```
+- **Avaliar o modelo salvo:**
+
+  ```bash
+  titanic-insights evaluate
+  ```
+- **Iniciar a API de predição:**
+
+  ```bash
+  titanic-insights api
+  ```
+- **Abrir o Jupyter Lab:**
+
+  ```bash
+  titanic-insights jupyter
+  ```
+
+## 🌐 API de Predição
+
+Para iniciar o servidor da API, execute o comando:
+
 ```bash
-# Download dos dados
-poetry run titanic-cli download
-
-# Explorar dados (abre Jupyter)
-poetry run titanic-cli explore
-
-# Abrir Jupyter Lab
-poetry run titanic-cli jupyter
-
-# Ver informações do projeto
-poetry run titanic-cli info
-
-# Ver versão
-poetry run titanic-cli version
+titanic-insights api
 ```
 
-### Scripts Disponíveis
-```bash
-# Download direto via script
-poetry run download-data
-```
+A API estará disponível em `http://127.0.0.1:8000`.
+
+A documentação interativa do Swagger UI, onde você pode testar os endpoints diretamente do navegador, está em:
+[**http://127.0.0.1:8000/docs**](http://127.0.0.1:8000/docs)
 
 ## 📁 Estrutura do Projeto
 
 ```
-titanic-insights/
-├── data/
-│   ├── raw/              # Dados brutos (train.csv, test.csv)
-│   └── processed/        # Dados pré-processados
-├── models/               # Modelos treinados salvos
-├── reports/              # Relatórios e insights gerados
-├── notebooks/
-│   └── 00_exploracao.ipynb  # Notebook de exploração
-├── src/
-│   ├── data/
-│   │   └── download.py   # Script de download
-│   ├── features/         # Engenharia de features
-│   ├── models/           # Treinamento e avaliação
-│   └── visualization/    # Visualizações e gráficos
-├── titanic_insights/
-│   ├── __init__.py
-│   └── cli.py           # CLI interativo
-├── tests/
-├── pyproject.toml       # Configuração do Poetry
-├── README.md
-└── KAGGLE_SETUP.md      # Guia de configuração do Kaggle
+.
+├── data/                    # Dados brutos, processados e externos
+├── models/                  # Modelos treinados (.joblib)
+├── notebooks/               # Notebooks Jupyter para exploração e experimentação
+├── reports/                 # Relatórios e figuras geradas
+├── src/                     # Código fonte do projeto
+│   ├── api/                 # Módulo da API FastAPI
+│   ├── data/                # Scripts para download e manipulação de dados
+│   ├── model/               # Scripts para treinamento e avaliação de modelos
+│   └── processing/          # Scripts para pré-processamento e engenharia de features
+├── tests/                   # Testes automatizados
+├── titanic_insights/        # Módulo da CLI
+└── poetry.toml              # Arquivo de configuração do Poetry
 ```
 
-## 🔧 Desenvolvimento
+## 🛠️ Ferramentas Utilizadas
 
-### Adicionar Novas Dependências
-```bash
-poetry add nome-do-pacote
-poetry add --group dev nome-do-pacote-dev
-```
+- **Linguagem:** Python 3.11
+- **CLI:** Click, Rich
+- **API:** FastAPI, Uvicorn
+- **Machine Learning:** Scikit-learn, Pandas
+- **Dependências:** Poetry
+- **Notebooks:** Jupyter Lab
 
-### Executar Testes
-```bash
-poetry run pytest
-```
+---
 
-### Formatação de Código
-```bash
-poetry run black .
-poetry run isort .
-```
-
-## 📊 Funcionalidades
-
-- ✅ **Download Automático**: Baixa dados do Kaggle automaticamente
-- ✅ **CLI Interativo**: Interface amigável para todas as operações
-- ✅ **Exploração de Dados**: Notebooks para análise exploratória
-- 🔄 **Pré-processamento**: Em desenvolvimento
-- 🔄 **Treinamento de Modelos**: Em desenvolvimento
-- 🔄 **Avaliação**: Em desenvolvimento
-- 🔄 **Geração de Insights**: Em desenvolvimento
-
-## 🤝 Contribuindo
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
-## 👨‍💻 Autor
-
-**Lucas** - [devlucasteles@gmail.com](mailto:devlucasteles@gmail.com)
-
-## 🙏 Agradecimentos
-
-- [Kaggle](https://www.kaggle.com) pelos dados do Titanic
-- [Poetry](https://python-poetry.org/) pelo gerenciamento de dependências
-- [Click](https://click.palletsprojects.com/) e [Rich](https://rich.readthedocs.io/) pelo CLI profissional
+Desenvolvido por Teles, Goulart e Ross.
