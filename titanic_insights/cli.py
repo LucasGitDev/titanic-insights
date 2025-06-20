@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""
-CLI profissional para o projeto Titanic Insights
-Usando Click e Rich para uma interface moderna
-"""
 
 import os
+import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -18,12 +16,12 @@ from rich.prompt import Confirm, Prompt
 from rich.table import Table
 from rich.text import Text
 
-# Configuração do console Rich
 console = Console()
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 
 def print_banner():
-    """Imprime o banner do projeto"""
     banner_text = Text()
     banner_text.append("🚢 ", style="bold blue")
     banner_text.append("TITANIC INSIGHTS", style="bold white on blue")
@@ -35,7 +33,6 @@ def print_banner():
 
 
 def print_menu():
-    """Imprime o menu principal usando Rich"""
     table = Table(
         title="📋 Menu Principal",
         box=box.ROUNDED,
@@ -50,11 +47,13 @@ def print_menu():
     menu_items = [
         ("1", "📥 Download dos dados", "✅ Disponível"),
         ("2", "🔍 Explorar dados", "✅ Disponível"),
-        ("3", "🧹 Pré-processar dados", "🔄 Em desenvolvimento"),
-        ("4", "🤖 Treinar modelo", "🔄 Em desenvolvimento"),
-        ("5", "📊 Avaliar modelo", "🔄 Em desenvolvimento"),
+        ("3", "🧹 Pré-processar dados", "✅ Disponível"),
+        ("4", "🤖 Treinar modelo", "✅ Disponível"),
+        ("5", "📊 Avaliar modelo", "✅ Disponível"),
         ("6", "📈 Gerar insights", "🔄 Em desenvolvimento"),
         ("7", "📝 Abrir Jupyter Lab", "✅ Disponível"),
+        ("8", "🚀 Iniciar API", "✅ Disponível"),
+        ("9", "🧪 Teste Visual da API", "✅ Disponível"),
         ("0", "❌ Sair", "✅ Disponível"),
     ]
 
@@ -67,14 +66,11 @@ def print_menu():
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
-    """🚢 Titanic Insights - Análise de Sobrevivência no Titanic"""
     if ctx.invoked_subcommand is None:
-        # Modo interativo
         interactive_mode()
 
 
 def interactive_mode():
-    """Modo interativo do CLI"""
     while True:
         console.clear()
         print_banner()
@@ -83,7 +79,7 @@ def interactive_mode():
         try:
             choice = Prompt.ask(
                 "\n[bold cyan]Escolha uma opção[/bold cyan]",
-                choices=["0", "1", "2", "3", "4", "5", "6", "7"],
+                choices=["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
                 default="0",
             )
 
@@ -114,6 +110,12 @@ def interactive_mode():
             elif choice == "7":
                 open_jupyter()
                 Prompt.ask("\n[dim]Pressione Enter para continuar...[/dim]")
+            elif choice == "8":
+                start_api()
+                Prompt.ask("\n[dim]Pressione Enter para continuar...[/dim]")
+            elif choice == "9":
+                test_suite()
+                Prompt.ask("\n[dim]Pressione Enter para continuar...[/dim]")
 
         except KeyboardInterrupt:
             console.print("\n[green]👋 Obrigado por usar o Titanic Insights![/green]")
@@ -123,12 +125,11 @@ def interactive_mode():
 @cli.command()
 @click.option("--interactive", "-i", is_flag=True, help="Modo interativo")
 def download(interactive):
-    """📥 Download dos dados do Titanic"""
+
     download_data()
 
 
 def download_data():
-    """Executa o download dos dados"""
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -137,7 +138,6 @@ def download_data():
         task = progress.add_task("📥 Iniciando download dos dados...", total=None)
 
         try:
-            # Importa e executa o módulo de download
             from src.data.download import main
 
             main()
@@ -156,12 +156,10 @@ def download_data():
 @cli.command()
 @click.option("--interactive", "-i", is_flag=True, help="Modo interativo")
 def explore(interactive):
-    """🔍 Explorar dados do Titanic"""
     explore_data()
 
 
 def explore_data():
-    """Abre o notebook de exploração"""
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -185,48 +183,119 @@ def explore_data():
 
 @cli.command()
 def preprocess():
-    """🧹 Pré-processar dados"""
     preprocess_data()
 
 
 def preprocess_data():
-    """Executa o pré-processamento dos dados"""
-    console.print("\n[yellow]⚠️  Funcionalidade em desenvolvimento[/yellow]")
-    console.print("Esta funcionalidade será implementada em breve!")
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        console=console,
+    ) as progress:
+        task = progress.add_task(
+            "🧹 Iniciando pré-processamento dos dados...", total=None
+        )
+
+        try:
+            from src.processing.preprocessing import main as preprocess_main
+
+            preprocess_main()
+            progress.update(task, description="✅ Dados pré-processados com sucesso!")
+            console.print("\n[green]✅ Dados pré-processados com sucesso![/green]")
+            console.print("[dim]Arquivos salvos em data/processed/[/dim]")
+        except ImportError:
+            progress.update(
+                task, description="❌ Erro: Módulo de pré-processamento não encontrado"
+            )
+            console.print(
+                "\n[red]❌ Erro: Módulo de pré-processamento não encontrado[/red]"
+            )
+        except FileNotFoundError:
+            progress.update(
+                task, description="❌ Erro: Arquivos de dados brutos não encontrados"
+            )
+            console.print(
+                "\n[red]❌ Erro: Arquivos de dados brutos não encontrados em data/raw.[/red]"
+            )
+            console.print("[dim]Execute o download dos dados primeiro (opção 1).[/dim]")
+        except Exception as e:
+            progress.update(task, description=f"❌ Erro durante o pré-processamento")
+            console.print(f"\n[red]❌ Erro durante o pré-processamento: {e}[/red]")
 
 
 @cli.command()
 def train():
-    """🤖 Treinar modelo de ML"""
     train_model()
 
 
 def train_model():
-    """Executa o treinamento do modelo"""
-    console.print("\n[yellow]⚠️  Funcionalidade em desenvolvimento[/yellow]")
-    console.print("Esta funcionalidade será implementada em breve!")
+    with Progress(
+        SpinnerColumn(),
+        TextColumn("[progress.description]{task.description}"),
+        console=console,
+    ) as progress:
+        task = progress.add_task("🤖 Iniciando treinamento do modelo...", total=None)
+        try:
+            from src.model.train import train_and_evaluate
+
+            train_and_evaluate()
+            progress.update(task, description="✅ Modelo treinado com sucesso!")
+            console.print("\n[green]✅ Modelo treinado e salvo com sucesso![/green]")
+        except ImportError:
+            progress.update(
+                task, description="❌ Erro: Módulo de treinamento não encontrado"
+            )
+            console.print("\n[red]❌ Erro: Módulo de treinamento não encontrado[/red]")
+        except FileNotFoundError:
+            progress.update(
+                task,
+                description="❌ Erro: Arquivo de dados pré-processados não encontrado",
+            )
+            console.print(
+                "\n[red]❌ Erro: Arquivo de dados não encontrado em data/processed.[/red]"
+            )
+            console.print(
+                "[dim]Execute o pré-processamento dos dados primeiro (opção 3).[/dim]"
+            )
+        except Exception as e:
+            progress.update(task, description=f"❌ Erro durante o treinamento")
+            console.print(f"\n[red]❌ Erro durante o treinamento: {e}[/red]")
 
 
 @cli.command()
 def evaluate():
-    """📊 Avaliar modelo de ML"""
     evaluate_model()
 
 
 def evaluate_model():
-    """Executa a avaliação do modelo"""
-    console.print("\n[yellow]⚠️  Funcionalidade em desenvolvimento[/yellow]")
-    console.print("Esta funcionalidade será implementada em breve!")
+    model_path = "models/logreg_titanic.joblib"
+    if not Path(model_path).exists():
+        console.print(f"\n[red]❌ Modelo não encontrado em {model_path}[/red]")
+        console.print("[dim]Treine um modelo primeiro (opção 4).[/dim]")
+        return
+
+    from joblib import load
+
+    model = load(model_path)
+
+    console.print(f"\n[green]✅ Modelo carregado de {model_path}[/green]")
+
+    panel = Panel(
+        Text(str(model), justify="left"),
+        title="🔎 Detalhes do Modelo",
+        border_style="blue",
+        box=box.ROUNDED,
+        padding=(1, 2),
+    )
+    console.print(panel)
 
 
 @cli.command()
 def insights():
-    """📈 Gerar insights e relatórios"""
     generate_insights()
 
 
 def generate_insights():
-    """Gera insights e relatórios"""
     console.print("\n[yellow]⚠️  Funcionalidade em desenvolvimento[/yellow]")
     console.print("Esta funcionalidade será implementada em breve!")
 
@@ -234,12 +303,10 @@ def generate_insights():
 @cli.command()
 @click.option("--interactive", "-i", is_flag=True, help="Modo interativo")
 def jupyter(interactive):
-    """📝 Abrir Jupyter Lab"""
     open_jupyter()
 
 
 def open_jupyter():
-    """Abre o Jupyter Lab"""
     with Progress(
         SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
@@ -257,8 +324,30 @@ def open_jupyter():
 
 
 @cli.command()
+def api():
+    start_api()
+
+
+def start_api():
+    console.print("\n[bold green]🚀 Iniciando a API de predição...[/bold green]")
+    console.print(
+        "Acesse a documentação interativa em: [cyan]http://127.0.0.1:8000/docs[/cyan]"
+    )
+    try:
+        import uvicorn
+
+        uvicorn.run("src.api.api:app", host="127.0.0.1", port=8000, reload=True)
+    except ImportError:
+        console.print("\n[red]❌ Erro: Uvicorn não está instalado.[/red]")
+        console.print(
+            "[dim]Por favor, execute 'poetry install' ou 'pip install uvicorn'.[/dim]"
+        )
+    except Exception as e:
+        console.print(f"\n[red]❌ Erro ao iniciar a API: {e}[/red]")
+
+
+@cli.command()
 def version():
-    """📋 Mostrar versão do projeto"""
     console.print(
         f"[bold blue]Titanic Insights[/bold blue] versão [green]0.1.0[/green]"
     )
@@ -266,7 +355,6 @@ def version():
 
 @cli.command()
 def info():
-    """ℹ️  Informações do projeto"""
     info_table = Table(title="ℹ️  Informações do Projeto", box=box.ROUNDED)
     info_table.add_column("Propriedade", style="cyan")
     info_table.add_column("Valor", style="white")
@@ -280,6 +368,70 @@ def info():
     info_table.add_row("Python", "^3.11")
 
     console.print(info_table)
+
+
+@cli.command("test-suite")
+def test_suite_command():
+    """🧪 Teste Visual da API/Frontend com Streamlit"""
+    test_suite()
+
+
+def test_suite():
+    console.print("\n[bold green]🧪 Iniciando suíte de testes visuais...[/bold green]")
+    console.print("Iniciando a API de predição em segundo plano...")
+    api_command = [
+        "uvicorn",
+        "src.api.api:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8000",
+    ]
+    api_process = None
+
+    try:
+        api_process = subprocess.Popen(
+            api_command, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE
+        )
+        console.print("Aguardando a API ficar online (5s)...")
+        time.sleep(5)
+        if api_process.poll() is not None:
+            stderr_output = api_process.stderr.read().decode("utf-8")
+            console.print("[red]❌ Falha ao iniciar a API em segundo plano.[/red]")
+            console.print(f"[dim]Erro: {stderr_output}[/dim]")
+            return
+
+        console.print("API online! Iniciando a aplicação Streamlit...")
+        console.print("A aplicação Streamlit será aberta no seu navegador.")
+        console.print(
+            "[bold yellow]Pressione Ctrl+C no terminal para encerrar tudo.[/bold yellow]"
+        )
+
+        test_app_path = "src/streamlit/app.py"
+        if not Path(test_app_path).exists():
+            console.print(
+                f"\n[red]❌ Erro: Arquivo da aplicação de teste não encontrado em {test_app_path}[/red]"
+            )
+            return
+
+        streamlit_command = ["streamlit", "run", test_app_path]
+        subprocess.run(streamlit_command)
+
+    except FileNotFoundError:
+        console.print("\n[red]❌ Erro: `uvicorn` ou `streamlit` não encontrado.[/red]")
+        console.print(
+            "[dim]Certifique-se de que todas as dependências estão instaladas com 'poetry install'.[/dim]"
+        )
+    except Exception as e:
+        console.print(f"\n[red]❌ Erro inesperado: {e}[/red]")
+    finally:
+        if api_process:
+            console.print(
+                "\n[bold yellow]Encerrando a API em segundo plano...[/bold yellow]"
+            )
+            api_process.terminate()
+            api_process.wait()
+            console.print("API encerrada.")
 
 
 if __name__ == "__main__":
