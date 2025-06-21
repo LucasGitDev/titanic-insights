@@ -1,8 +1,8 @@
 # Titanic Insights 🚢
 
-Análise completa e pipeline de Machine Learning para o clássico desafio do Kaggle: prever a sobrevivência de passageiros no desastre do Titanic. Este projeto implementa um fluxo de trabalho de ponta a ponta, desde o download dos dados até a implantação de uma API de predição.
+<div style="text-align:center"><img src='./titanic-insight.png' height=300/></div>
 
-![Interface da CLI](https://raw.githubusercontent.com/lucasgitdev/titanic-insights/main/reports/figures/cli_screenshot.png)
+Análise completa e pipeline de Machine Learning para o clássico desafio do Kaggle: prever a sobrevivência de passageiros no desastre do Titanic. Este projeto implementa um fluxo de trabalho de ponta a ponta, desde o download dos dados até a implantação de uma API de predição.
 
 ## ✨ Funcionalidades
 
